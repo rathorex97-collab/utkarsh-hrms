@@ -119,6 +119,8 @@ dialog h3{margin:0 0 12px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:10p
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="firebase-config.js"></script>
 <script>
+  window.onerror=(m,u,l)=>document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+m+' (line '+l+')</pre>');
+window.onunhandledrejection=e=>document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+(e.reason&&e.reason.message||e.reason)+'</pre>');
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
 const dk=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const hm=t=>t?new Date(t).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'—';
