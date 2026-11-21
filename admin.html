@@ -233,7 +233,7 @@ document.querySelector('main').addEventListener('change',async e=>{const id=e.ta
   firebase.initializeApp(firebaseConfig);const auth=firebase.auth();db=firebase.firestore();let started=false;
   const fix=o=>{for(const k of['in','out'])if(o[k]&&o[k].toMillis)o[k]=o[k].toMillis();return o};
   $('#dL').addEventListener('cancel',e=>e.preventDefault());
-  $('#lOk').onclick=async()=>{try{await auth.signInWithEmailAndPassword($('#lE').value.trim(),$('#lP').value)}catch(e){$('#lErr').textContent='Email ya password galat hai.'}};
+  $('#lOk').onclick=async()=>{try{await auth.signInWithEmailAndPassword($('#lE').value.trim(),$('#lP').value)}catch(e){$('#lErr').textContent='Error: '+e.code'}};
   auth.onAuthStateChanged(async u=>{
     if(!u){$('#dL').showModal();return}
     const a=await db.collection('admins').doc(u.uid).get().catch(()=>null);
