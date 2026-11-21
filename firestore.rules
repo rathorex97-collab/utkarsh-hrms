@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function ok() { return request.auth != null; }
+    function admin() { return ok() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function me() { return get(/databases/$(database)/documents/emp/$(request.auth.uid)).data; }
+    // coarse server-side location check (~300 m box around the branch); exact radius is checked in the app
+    function near(d) {
+      let b = get(/databases/$(database)/documents/branch/$(me().branchId)).data;
+      return me().get('mode','phone') != 'machine' && abs(d.lat - b.lat) < 0.003 && abs(d.lng - b.lng) < 0.003;
+    }
+    match /admins/{u} { allow read: if ok() && request.auth.uid == u; }
+    match /emp/{u} { allow read: if admin() || (ok() && request.auth.uid == u); allow write: if admin(); }
+    match /branch/{b} { allow read: if ok(); allow write: if admin(); }
+    match /cfg/{c} { allow read: if ok(); allow write: if admin(); }
+    match /dept/{d} { allow read, write: if admin(); }
+    match /desig/{d} { allow read, write: if admin(); }
+    match /ver/{d} { allow read, write: if admin(); }
+    match /att/{id} {
+      allow read: if admin() || (ok() && resource.data.empId == request.auth.uid);
+      allow write: if admin();
+      allow create: if ok() && request.resource.data.empId == request.auth.uid
+        && id.matches(request.auth.uid + '_.*')
+        && request.resource.data.in == request.time && request.resource.data.out == null
+        && near(request.resource.data);
+      allow update: if ok() && resource.data.empId == request.auth.uid && resource.data.out == null
+        && request.resource.data.empId == resource.data.empId && request.resource.data.in == resource.data.in
+        && request.resource.data.out == request.time && near(request.resource.data);
+    }
+    match /req/{r} {
+      allow read: if admin() || (ok() && resource.data.empId == request.auth.uid);
+      allow write: if admin();
+      allow create: if ok() && request.resource.data.empId == request.auth.uid && request.resource.data.status == 'pending';
+    }
+  }
+}

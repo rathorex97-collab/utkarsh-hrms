@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="hi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Utkarsh Path Lab – Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f4f8;--card:#fff;--ink:#1f2a37;--mute:#6b7785;--line:#e3e8ee;--pri:#1480c4;--pri-t:#e6f3fb;--head:#e9f2fa;--ok:#12904f;--warn:#b7791f;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10161d;--card:#18212b;--ink:#e8eef4;--mute:#92a0ae;--line:#2a3643;--pri:#4aa8e0;--pri-t:#1b3446;--head:#1c2b3a;--ok:#4cc88b;--warn:#e8b95c;--bad:#f08a7e}}
+:root[data-theme="dark"]{--bg:#10161d;--card:#18212b;--ink:#e8eef4;--mute:#92a0ae;--line:#2a3643;--pri:#4aa8e0;--pri-t:#1b3446;--head:#1c2b3a;--ok:#4cc88b;--warn:#e8b95c;--bad:#f08a7e}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 Mukta,system-ui,sans-serif}
+.app{display:flex;min-height:100vh}
+aside{width:230px;background:var(--card);border-right:1px solid var(--line);padding:14px 12px;flex:none}
+.brand{display:flex;gap:10px;align-items:center;font-weight:700;font-size:16px;line-height:1.15;margin:0 4px 16px}
+.brand i{font-style:normal;width:34px;height:34px;border-radius:9px;background:var(--pri);color:#fff;display:grid;place-items:center;font-weight:700}
+.brand small{display:block;font-weight:400;font-size:12px;color:var(--mute)}
+.mi{display:flex;align-items:center;gap:10px;width:100%;border:1px solid transparent;background:none;color:var(--ink);font:600 15px Mukta,sans-serif;padding:9px 12px;border-radius:9px;cursor:pointer;text-align:left;margin-bottom:3px}
+.mi:hover{background:var(--bg)}.mi.on{background:var(--pri);color:#fff}
+.mi.open{border-color:var(--pri);color:var(--pri);background:var(--card)}
+.mi .ch{margin-left:auto;font-size:11px}
+.sub{margin:0 0 6px 18px;padding-left:12px;border-left:1px solid var(--line)}
+.sub button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:400 14px Mukta,sans-serif;padding:7px 8px;cursor:pointer;border-radius:6px}
+.sub button:hover{background:var(--bg)}.sub button.on{color:var(--pri);font-weight:700}
+main{flex:1;min-width:0;padding:16px}
+.banner{background:var(--pri-t);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.banner.w{background:#fbefd4;color:#7a5200}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:14px}
+.ch1{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px}
+.ch1 h2{margin:0;font-size:17px;font-weight:600}.ch1 h2 b{color:var(--pri)}.sp{flex:1}
+.btn{font:600 14px Mukta,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;padding:7px 14px;cursor:pointer}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}.btn.sm{padding:3px 10px;font-size:13px}
+input,select{font:400 15px Mukta,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:7px 10px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{background:var(--head);text-align:left;font-weight:600;font-size:14px;padding:11px 12px;white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+td small{display:block;color:var(--mute);font-size:13px;line-height:1.2}
+td.n{font-weight:600;text-transform:uppercase}td.n small{text-transform:none;font-weight:400}
+.st{font-weight:600}.st.p{color:var(--ok)}.st.l{color:var(--warn)}.st.a{color:var(--bad)}
+.dot:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:6px}
+.pg{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;font-size:14px;color:var(--mute)}
+.pg button{min-width:32px}.pg .on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.stat b{display:block;font-size:28px;line-height:1.1}.stat span{color:var(--mute);font-size:13px}
+.empty{text-align:center;color:var(--mute);padding:28px}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);padding:18px;width:min(460px,94vw)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog h3{margin:0 0 12px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg label{font-size:13px;color:var(--mute)}.fg input,.fg select{width:100%;margin-top:2px}.fg .full{grid-column:1/-1}
+.menu{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.15);z-index:20;min-width:150px;overflow:hidden}
+.menu button{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:400 14px Mukta,sans-serif;padding:9px 14px;cursor:pointer}.menu button:hover{background:var(--bg)}
+.hide{display:none!important}
+@media (max-width:760px){.app{flex-direction:column}aside{width:100%;border-right:0;border-bottom:1px solid var(--line)}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand"><i>U</i><div>Utkarsh Path Lab<small>Admin panel</small></div></div>
+  <button class="mi" data-p="dash">Dashboard</button>
+  <button class="mi" id="mEmp">Employees <span class="ch">▾</span></button>
+  <div class="sub" id="sub">
+    <button data-p="emp">Employees</button><button data-p="ver">Background Verification</button><button data-p="dept">Departments</button><button data-p="desig">Designations</button><button data-p="perm">Attendance Permission</button><button data-p="branch">Manage Branch</button>
+  </div>
+  <button class="mi" data-p="att">Attendance</button>
+  <button class="mi" data-p="shift">Manage Shifts</button>
+  <button class="mi" data-p="ph">Leaves &amp; Holidays</button>
+  <button class="mi" data-p="req">Approval Requests</button>
+</aside>
+<main>
+  <div id="demo" class="banner w hide">Demo mode: data sirf is browser me hai. Sab devices par shared data ke liye owner/admin account se kholo.</div>
+  <div id="deny" class="banner hide">Ye page sirf admin ke liye hai.</div>
+
+  <section id="p-dash">
+    <div class="stats"><div class="stat"><b id="sT">0</b><span>Total active staff</span></div><div class="stat"><b id="sP" style="color:var(--ok)">0</b><span>Aaj present</span></div><div class="stat"><b id="sL" style="color:var(--warn)">0</b><span>Late</span></div><div class="stat"><b id="sA" style="color:var(--bad)">0</b><span>Absent</span></div></div>
+    <div class="card"><div class="ch1"><h2>Aaj ki attendance</h2></div><div class="tw"><table><thead><tr><th>Employee</th><th>Branch</th><th>Punch in</th><th>Punch out</th><th>Status</th></tr></thead><tbody id="dRows"></tbody></table></div></div>
+  </section>
+
+  <section id="p-emp" class="hide">
+    <div class="card">
+      <div class="ch1"><h2>Total Active Employees <b id="cnt">0</b></h2><span class="sp"></span><input id="q" placeholder="Search naam / ID"><button class="btn pri" id="add">+ Add Employee</button><button class="btn" id="csvE">Actions: CSV</button></div>
+      <div class="tw"><table><thead><tr><th style="width:36px"><input type="checkbox" id="all"></th><th>Employee</th><th>Master Branch</th><th>Roles</th><th>Date of Joining</th><th>Tags</th><th>Aaj</th><th>Action</th></tr></thead><tbody id="eRows"></tbody></table></div>
+      <div class="pg"><span id="shw"></span><span class="sp"></span><select id="per"><option>10</option><option>25</option><option>50</option></select><button class="btn" id="prev">‹ Previous</button><span id="pgs"></span><button class="btn" id="next">Next ›</button></div>
+    </div>
+  </section>
+
+  <section id="p-att" class="hide">
+    <div class="card">
+      <div class="ch1"><h2>Daily Attendance</h2><input type="date" id="ad"><span class="sp"></span><button class="btn" id="csvA">Download CSV</button></div>
+      <div class="tw"><table><thead><tr><th>Employee</th><th>Branch</th><th>Punch in</th><th>Punch out</th><th>Hours</th><th>Status</th><th>Action</th></tr></thead><tbody id="aRows"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="p-shift" class="hide"><div class="card" style="padding:16px;max-width:460px"><h2 style="margin:0 0 10px;font-size:17px">Manage Shifts</h2>
+    <div class="fg"><label>Shift start<input type="time" id="cSt"></label><label>Late grace (min)<input id="cGr" inputmode="numeric"></label></div>
+    <p style="margin:12px 0 0"><button class="btn pri" id="cSave">Save</button> <span id="cMsg" style="color:var(--ok)"></span></p></div></section>
+
+  <section id="p-ver" class="hide"><div class="card"><div class="ch1"><h2>Background Verification</h2></div><div class="tw"><table><thead><tr><th>Employee</th><th>Status</th><th>Verified on</th><th>Action</th></tr></thead><tbody id="vRows"></tbody></table></div></div></section>
+<section id="p-dept" class="hide"></section><section id="p-desig" class="hide"></section><section id="p-branch" class="hide"></section>
+<section id="p-perm" class="hide"><div class="card"><div class="ch1"><h2>Attendance Permission</h2></div><div class="tw"><table><thead><tr><th>Employee</th><th>Branch</th><th>Punch kaise kar sakta hai</th></tr></thead><tbody id="pRows"></tbody></table></div></div></section>
+<section id="p-req" class="hide"><div class="card"><div class="ch1"><h2>Approval Requests <b id="rN">0</b></h2></div><div class="tw"><table><thead><tr><th>Employee</th><th>Date</th><th>Type</th><th>Time maanga</th><th>Karan</th><th>Status</th><th>Action</th></tr></thead><tbody id="rRows"></tbody></table></div></div></section>
+<section id="p-ph" class="hide"><div class="card"><div class="empty">Ye section abhi bana nahi hai. Batao kaunsa pehle chahiye.</div></div></section>
+</main></div>
+
+<dialog id="dE"><h3 id="dEt">Add Employee</h3><div class="fg">
+  <label class="full">Naam<input id="fN"></label>
+  <label>Employee ID<input id="fI" placeholder="1005"></label><label>Mobile<input id="fM" inputmode="tel"></label>
+  <label class="full">Master Branch<input id="fB" list="dl-branch" placeholder="Branch chuno ya likho"></label>
+  <label>Role<input id="fR" list="dl-desig" placeholder="Technician"></label><label>Department (Lab)<input id="fD" list="dl-dept" placeholder="Lab ka naam"></label>
+  <label class="full">Staff app PIN (sirf naye staff ke liye, 4 digit)<input id="fP" inputmode="numeric" maxlength="4"></label><label>Date of Joining<input type="date" id="fJ"></label><label>Tag<select id="fS"><option>Active</option><option>Inactive</option></select></label>
+</div><p id="fErr" style="color:var(--bad);margin:8px 0 0"></p>
+<p style="text-align:right;margin:12px 0 0"><button class="btn" id="fX">Cancel</button> <button class="btn pri" id="fOk">Save</button></p></dialog>
+
+<dialog id="dL"><h3>Admin login</h3><div class="fg"><label class="full">Email<input id="lE" type="email"></label><label class="full">Password<input id="lP" type="password"></label></div><p id="lErr" style="color:var(--bad);margin:8px 0 0"></p><p style="text-align:right;margin:12px 0 0"><button class="btn pri" id="lOk">Login</button></p></dialog>
+<datalist id="dl-branch"></datalist><datalist id="dl-desig"></datalist><datalist id="dl-dept"></datalist>
+<dialog id="dA"><h3 id="dAt">Edit punch</h3><div class="fg"><label>Punch in<input type="time" id="aI"></label><label>Punch out<input type="time" id="aO"></label></div>
+<p style="text-align:right;margin:14px 0 0"><button class="btn" id="aX">Cancel</button> <button class="btn pri" id="aOk">Save</button></p></dialog>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="firebase-config.js"></script>
+<script>
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
+const dk=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const hm=t=>t?new Date(t).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'—';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fd=s=>s?new Date(s+'T00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+let db=null,emps=[],atts=[],cfg={start:'09:30',grace:15},page='dash',pn=1,editId=null,editAtt=null,ad=dk(new Date());
+const COLS=['emp','att','cfg','dept','desig','branch','ver','req'],L={dept:[],desig:[],branch:[],ver:[],req:[]},sel={};
+const mem=Object.fromEntries(COLS.map(c=>[c,{}]));
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function pull(){emps=Object.entries(mem.emp).map(([id,v])=>({id,...v}));atts=Object.entries(mem.att).map(([id,v])=>({id,...v}));cfg={start:'09:30',grace:15,...(mem.cfg.lab||{})};for(const c in L)L[c]=Object.entries(mem[c]).map(([id,v])=>({id,...v}));render()}
+async function put(c,id,d){if(db)await db.collection(c).doc(id).set(d);else{mem[c][id]=d;ls.set('upa_'+c,mem[c]);pull()}}
+async function del(c,id){if(db)await db.collection(c).doc(id).delete();else{delete mem[c][id];ls.set('upa_'+c,mem[c]);pull()}}
+const active=()=>emps.filter(e=>e.tag!=='Inactive');
+function status(a){if(!a||!a.in)return'a';const[h,m]=cfg.start.split(':').map(Number),l=new Date(a.in);l.setHours(h,m+Number(cfg.grace||0),0,0);return a.in>l.getTime()?'l':'p'}
+const SL={p:'Present',l:'Late',a:'Absent'};
+const by=d=>Object.fromEntries(atts.filter(a=>a.date===d).map(a=>[a.empId,a]));
+const stc=(a)=>{const s=status(a);return`<span class="st dot ${s}">${SL[s]}</span>`};
+
+function go(p){page=p;for(const x of['dash','emp','att','shift','ver','dept','desig','perm','branch','req','ph'])$('#p-'+x).classList.toggle('hide',x!==p);
+  document.querySelectorAll('.mi[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p&&p!=='ph'));
+  document.querySelectorAll('.sub button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));render()}
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>go(b.dataset.p));
+$('#mEmp').onclick=()=>{$('#sub').classList.toggle('hide');$('#mEmp').classList.toggle('open')};$('#mEmp').classList.add('open');
+
+function render(){
+  const t=by(dk(new Date())),A=active();let P=0,L=0,Ab=0;
+  $('#dRows').innerHTML=A.length?A.map(e=>{const a=t[e.id],s=status(a);s==='p'?P++:s==='l'?L++:Ab++;return`<tr><td class="n">${esc(e.name)}<small>${esc(e.code)}</small></td><td>${esc(e.branch)}</td><td>${hm(a?.in)}</td><td>${hm(a?.out)}</td><td>${stc(a)}</td></tr>`}).join(''):'<tr><td colspan="5" class="empty">Employees page par staff add karo.</td></tr>';
+  $('#sT').textContent=A.length;$('#sP').textContent=P;$('#sL').textContent=L;$('#sA').textContent=Ab;
+  // employees
+  const q=$('#q').value.trim().toLowerCase(),per=+$('#per').value;
+  const f=emps.filter(e=>!q||(e.name+' '+e.code).toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
+  $('#cnt').textContent=A.length;const pages=Math.max(1,Math.ceil(f.length/per));if(pn>pages)pn=pages;
+  const sl=f.slice((pn-1)*per,pn*per);
+  $('#eRows').innerHTML=sl.length?sl.map(e=>`<tr><td><input type="checkbox"></td><td class="n">${esc(e.name)}<small>${esc(e.code)}</small></td><td style="max-width:230px"><u>${esc(e.branch)}</u></td><td>${esc(e.role)}<small>${esc(e.dept)}</small></td><td>${fd(e.joined)}</td><td><span class="st dot ${e.tag==='Inactive'?'a':'p'}">${e.tag==='Inactive'?'Inactive':'Active'}</span></td><td>${stc(t[e.id])}</td><td><button class="btn sm" data-k="${e.id}" aria-label="Actions">⋮</button></td></tr>`).join(''):'<tr><td colspan="8" class="empty">Koi employee nahi mila.</td></tr>';
+  $('#shw').textContent=f.length?`Showing ${(pn-1)*per+1} - ${Math.min(pn*per,f.length)} of ${f.length} Results`:'0 Results';
+  $('#pgs').innerHTML=Array.from({length:pages},(_,i)=>`<button class="btn sm ${i+1===pn?'on':''}" data-pg="${i+1}">${i+1}</button>`).join(' ');
+  // attendance
+  $('#ad').value=ad;const d=by(ad);
+  $('#aRows').innerHTML=A.length?A.map(e=>{const a=d[e.id];return`<tr><td class="n">${esc(e.name)}<small>${esc(e.code)}</small></td><td>${esc(e.branch)}</td><td>${hm(a?.in)}${a?.inDist!=null?`<small>${a.inDist} m door</small>`:''}</td><td>${hm(a?.out)}</td><td>${a?.in&&a.out?((a.out-a.in)/36e5).toFixed(1)+' h':'—'}</td><td>${stc(a)}</td><td><button class="btn sm" data-ea="${e.id}">Edit</button></td></tr>`}).join(''):'<tr><td colspan="7" class="empty">Koi active employee nahi.</td></tr>';
+  if(document.activeElement.id!=='cSt')$('#cSt').value=cfg.start;if(document.activeElement.id!=='cGr')$('#cGr').value=cfg.grace;
+}
+$('#q').oninput=()=>{pn=1;render()};$('#per').onchange=()=>{pn=1;render()};
+$('#prev').onclick=()=>{if(pn>1){pn--;render()}};$('#next').onclick=()=>{pn++;render()};
+$('#pgs').onclick=e=>{if(e.target.dataset.pg){pn=+e.target.dataset.pg;render()}};
+$('#all').onchange=e=>document.querySelectorAll('#eRows input').forEach(c=>c.checked=e.target.checked);
+$('#ad').onchange=e=>{ad=e.target.value||ad;render()};
+
+// employee dialog + row menu
+function openE(e){editId=e?e.id:null;$('#dEt').textContent=e?'Edit Employee':'Add Employee';$('#fErr').textContent='';
+  $('#fN').value=e?.name||'';$('#fI').value=e?.code||'';$('#fM').value=e?.phone||'';$('#fB').value=e?.branch||'';$('#fR').value=e?.role||'';$('#fD').value=e?.dept||'';$('#fJ').value=e?.joined||'';$('#fS').value=e?.tag||'Active';$('#fP').value='';$('#dE').showModal()}
+$('#add').onclick=()=>openE();$('#fX').onclick=()=>$('#dE').close();
+$('#fOk').onclick=async()=>{const n=$('#fN').value.trim(),c=$('#fI').value.trim();if(!n||!c){$('#fErr').textContent='Naam aur Employee ID zaroori hai.';return}
+  if(emps.some(e=>e.code===c&&e.id!==editId)){$('#fErr').textContent='Ye Employee ID pehle se hai.';return}
+  const ph=$('#fM').value.replace(/\D/g,'').slice(-10),pin=$('#fP').value.trim(),br=$('#fB').value.trim(),old=emps.find(x=>x.id===editId)||{};let id=editId;
+  if(!id){if(ph.length!==10||!/^\d{4}$/.test(pin)){$('#fErr').textContent='10 digit mobile aur 4 digit PIN zaroori hai.';return}
+    try{const sec=firebase.apps.find(a=>a.name==='sec')||firebase.initializeApp(firebaseConfig,'sec');const cr=await sec.auth().createUserWithEmailAndPassword(ph+'@staff.utkarsh.app','Utk'+pin);id=cr.user.uid;await sec.auth().signOut()}catch(x){$('#fErr').textContent='Account nahi bana (ye mobile pehle se registered ho sakta hai).';return}}
+  const b=L.branch.find(x=>x.name===br),{id:_i,...o}=old;
+  await put('emp',id,{...o,name:n,code:c,phone:ph||old.phone||'',branch:br,branchId:b?b.id:(old.branchId||''),role:$('#fR').value.trim(),dept:$('#fD').value.trim(),joined:$('#fJ').value,tag:$('#fS').value});$('#dE').close()};
+let menu=null;const kill=()=>{menu&&menu.remove();menu=null};document.addEventListener('click',e=>{if(!e.target.dataset.k)kill()});
+$('#eRows').onclick=e=>{const id=e.target.dataset.k;if(!id)return;kill();const r=e.target.getBoundingClientRect(),m=document.createElement('div');m.className='menu';m.style.top=(r.bottom+scrollY+4)+'px';m.style.left=Math.max(8,r.right+scrollX-150)+'px';
+  m.innerHTML='<button data-a="e">Edit</button><button data-a="t">Active / Inactive</button><button data-a="d">Delete</button>';
+  m.onclick=async x=>{const em=emps.find(z=>z.id===id),a=x.target.dataset.a;kill();if(a==='e')openE(em);if(a==='t'){const{id:_i,...rest}=em;await put('emp',id,{...rest,tag:em.tag==='Inactive'?'Active':'Inactive'})};if(a==='d'&&confirm(em.name+' ko delete karna hai?'))await del('emp',id)};
+  document.body.appendChild(m);menu=m;e.stopPropagation()};
+
+// attendance edit
+const tm=t=>t?pad(new Date(t).getHours())+':'+pad(new Date(t).getMinutes()):'';
+const mk=(d,t)=>t?new Date(d+'T'+t).getTime():null;
+$('#aRows').onclick=e=>{const id=e.target.dataset.ea;if(!id)return;const em=emps.find(x=>x.id===id),a=by(ad)[id];editAtt=id;$('#dAt').textContent=em.name+' – '+fd(ad);$('#aI').value=tm(a?.in);$('#aO').value=tm(a?.out);$('#dA').showModal()};
+$('#aX').onclick=()=>$('#dA').close();
+$('#aOk').onclick=async()=>{const em=emps.find(x=>x.id===editAtt),old=by(ad)[editAtt]||{};
+  await put('att',editAtt+'_'+ad,{empId:editAtt,name:em.name,date:ad,in:mk(ad,$('#aI').value),out:mk(ad,$('#aO').value),inDist:old.inDist??null,outDist:old.outDist??null});$('#dA').close()};
+$('#cSave').onclick=async()=>{await put('cfg','lab',{start:$('#cSt').value||'09:30',grace:Number($('#cGr').value)||0});$('#cMsg').textContent='Save ho gaya.'};
+
+// csv
+async function csv(name,rows){const s=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/csv'}));a.download=name;a.click()}}
+$('#csvA').onclick=()=>{const d=by(ad);csv('attendance-'+ad+'.csv',[['Date','ID','Name','Branch','In','Out','Status']].concat(active().map(e=>[ad,e.code,e.name,e.branch,hm(d[e.id]?.in),hm(d[e.id]?.out),SL[status(d[e.id])]])))};
+$('#csvE').onclick=()=>csv('employees.csv',[['ID','Name','Branch','Role','Dept','Joined','Mobile','Tag']].concat(emps.map(e=>[e.code,e.name,e.branch,e.role,e.dept,e.joined||'',e.phone||'',e.tag||'Active'])));
+
+
+const LISTS={dept:{t:'Departments (Labs)',f:'dept',ph:'Lab ka naam',one:'Lab'},desig:{t:'Designations',f:'role',ph:'Designation, jaise Technician',one:'Designation'},branch:{t:'Manage Branch',f:'branch',ph:'Branch ka naam',one:'Branch'}};
+for(const k in LISTS){const c=LISTS[k];$('#p-'+k).innerHTML=`<div class="card"><div class="ch1"><h2>${c.t} <b id="n-${k}">0</b></h2><span class="sp"></span><input id="i-${k}" placeholder="${c.ph}"><button class="btn pri" data-add="${k}">+ Add ${c.one}</button></div><div id="l-${k}" style="display:flex;gap:10px;flex-wrap:wrap;padding:0 16px 16px"></div></div><div class="card hide" id="d-${k}"><div class="ch1"><h2 id="dt-${k}"></h2></div><div class="tw"><table><thead><tr><th>Employee</th><th>Role</th><th>Branch</th><th>Aaj</th></tr></thead><tbody id="db-${k}"></tbody></table></div></div>`}
+const MODES={phone:'Phone (GPS)',machine:'Digital punch machine',both:'Dono'};
+const _r=render;render=function(){_r();render2()};
+function render2(){
+  const t=by(dk(new Date())),srt=a=>a.slice().sort((x,y)=>(x.name||'').localeCompare(y.name||''));
+  for(const k in LISTS){const c=LISTS[k],it=srt(L[k]);$('#n-'+k).textContent=it.length;
+    $('#dl-'+k).innerHTML=it.map(i=>`<option value="${esc(i.name)}">`).join('');
+    $('#l-'+k).innerHTML=it.length?it.map(i=>`<div class="stat" style="cursor:pointer;min-width:190px;${sel[k]===i.id?'border-color:var(--pri)':''}" data-sel="${k}:${i.id}"><button class="btn sm" data-rm="${k}:${i.id}" style="float:right" aria-label="Hatao">✕</button><b style="font-size:17px">${esc(i.name)}</b><span>${emps.filter(e=>e[c.f]===i.name).length} employees</span>${k==='branch'?`<br><button class="btn sm" data-loc="${i.id}">${i.lat?'📍 Location set ('+(i.radius||100)+' m)':'📍 Location set karo'}</button>`:''}</div>`).join(''):'<span class="empty" style="padding:8px">Abhi koi nahi. Upar se add karo.</span>';
+    const s=it.find(i=>i.id===sel[k]);$('#d-'+k).classList.toggle('hide',!s);
+    if(s){$('#dt-'+k).textContent=s.name+' – employees';const m=emps.filter(e=>e[c.f]===s.name);
+      $('#db-'+k).innerHTML=m.length?srt(m).map(e=>`<tr><td class="n">${esc(e.name)}<small>${esc(e.code)}</small></td><td>${esc(e.role)}</td><td>${esc(e.branch)}</td><td>${stc(t[e.id])}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">Is me abhi koi employee nahi.</td></tr>'}}
+  const E=srt(emps),V=Object.fromEntries(L.ver.map(v=>[v.id,v]));
+  $('#vRows').innerHTML=E.length?E.map(e=>{const v=V[e.id]||{};return`<tr><td class="n">${esc(e.name)}<small>${esc(e.code)}</small></td><td><span class="st dot ${v.verified?'p':'a'}">${v.verified?'Verified':'Not Verified'}</span></td><td>${v.verified?fd(dk(new Date(v.on))):'—'}</td><td><button class="btn sm" data-v="${e.id}">${v.verified?'Verified hatao':'Verified mark karo'}</button></td></tr>`}).join(''):'<tr><td colspan="4" class="empty">Employees page par staff add karo, wo yahan apne aap aa jayenge.</td></tr>';
+  $('#pRows').innerHTML=E.length?E.map(e=>`<tr><td class="n">${esc(e.name)}<small>${esc(e.code)}</small></td><td>${esc(e.branch)}</td><td><select data-m="${e.id}">${Object.entries(MODES).map(([k,v])=>`<option value="${k}" ${(e.mode||'phone')===k?'selected':''}>${v}</option>`).join('')}</select></td></tr>`).join(''):'<tr><td colspan="3" class="empty">Koi employee nahi.</td></tr>';
+  const R=L.req.slice().sort((a,b)=>(a.status==='pending'?0:1)-(b.status==='pending'?0:1)||(b.created||0)-(a.created||0));
+  $('#rN').textContent=L.req.filter(r=>r.status==='pending').length;
+  $('#rRows').innerHTML=R.length?R.map(r=>`<tr><td class="n">${esc(r.name)}</td><td>${fd(r.date)}</td><td>${esc(r.type)}</td><td>${r.in?'In '+hm(r.in):''} ${r.out?'Out '+hm(r.out):''}</td><td>${esc(r.reason)}</td><td><span class="st dot ${r.status==='approved'?'p':r.status==='rejected'?'a':'l'}">${esc(r.status)}</span></td><td>${r.status==='pending'?`<button class="btn sm pri" data-ap="${r.id}">Approve</button> <button class="btn sm" data-rj="${r.id}">Reject</button>`:''}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">Abhi koi request nahi. Staff app se late ya missed punch ki request yahan aayegi.</td></tr>';
+}
+document.querySelector('main').addEventListener('click',async e=>{
+  const g=s=>e.target.closest('['+s+']'),rm=g('data-rm'),sl=g('data-sel'),ad1=g('data-add'),v=g('data-v'),ap=g('data-ap'),rj=g('data-rj');
+  const lc=g('data-loc');if(lc){navigator.geolocation.getCurrentPosition(async p=>{const b=L.branch.find(x=>x.id===lc.dataset.loc),{id:_i,...r}=b,rad=prompt('Radius meter me (staff itne meter ke andar punch kar sakega)',r.radius||100);if(rad===null)return;await put('branch',b.id,{...r,lat:p.coords.latitude,lng:p.coords.longitude,radius:Number(rad)||100});alert('Location save ho gayi (±'+Math.round(p.coords.accuracy)+' m).')},()=>alert('Location nahi mili. Permission allow karo.'),{enableHighAccuracy:true,timeout:15000});return}
+  if(rm){const[k,id]=rm.dataset.rm.split(':'),it=L[k].find(i=>i.id===id);if(confirm(it.name+' hatana hai?'))await del(k,id);return}
+  if(sl){const[k,id]=sl.dataset.sel.split(':');sel[k]=sel[k]===id?null:id;render();return}
+  if(ad1){const k=ad1.dataset.add,i=$('#i-'+k),n=i.value.trim();if(!n)return;if(L[k].some(x=>x.name.toLowerCase()===n.toLowerCase())){alert('Ye pehle se hai.');return}await put(k,'x'+Date.now().toString(36),{name:n});i.value='';return}
+  if(v){const id=v.dataset.v,o=L.ver.find(x=>x.id===id)||{};await put('ver',id,{verified:!o.verified,on:Date.now()});return}
+  if(ap||rj){const r=L.req.find(x=>x.id===(ap||rj).dataset[ap?'ap':'rj']);
+    if(ap){const old=by(r.date)[r.empId]||{},{id:_i,...o}=old;await put('att',r.empId+'_'+r.date,{empId:r.empId,name:r.name,date:r.date,in:r.in||old.in||null,out:r.out||old.out||null,inDist:old.inDist??null,outDist:old.outDist??null})}
+    const{id:_j,...rest}=r;await put('req',r.id,{...rest,status:ap?'approved':'rejected'})}
+});
+document.querySelector('main').addEventListener('change',async e=>{const id=e.target.dataset.m;if(!id)return;const{id:_i,...em}=emps.find(x=>x.id===id);await put('emp',id,{...em,mode:e.target.value})});
+(async()=>{
+  firebase.initializeApp(firebaseConfig);const auth=firebase.auth();db=firebase.firestore();let started=false;
+  const fix=o=>{for(const k of['in','out'])if(o[k]&&o[k].toMillis)o[k]=o[k].toMillis();return o};
+  $('#dL').addEventListener('cancel',e=>e.preventDefault());
+  $('#lOk').onclick=async()=>{try{await auth.signInWithEmailAndPassword($('#lE').value.trim(),$('#lP').value)}catch(e){$('#lErr').textContent='Email ya password galat hai.'}};
+  auth.onAuthStateChanged(async u=>{
+    if(!u){$('#dL').showModal();return}
+    const a=await db.collection('admins').doc(u.uid).get().catch(()=>null);
+    if(!a||!a.exists){await auth.signOut();$('#lErr').textContent='Ye account admin nahi hai.';return}
+    $('#dL').close();if(started)return;started=true;
+    const w=(c,fn)=>db.collection(c).onSnapshot(s=>fn(s.docs.map(d=>fix({id:d.id,...d.data()}))),()=>{});
+    w('emp',l=>{emps=l;render()});w('att',l=>{atts=l;render()});
+    for(const c in L)w(c,l=>{L[c]=l;render()});
+    w('cfg',l=>{cfg={start:'09:30',grace:15,...(l.find(x=>x.id==='lab')||{})};render()});
+    go('dash')});
+})();
+</script></body></html>
