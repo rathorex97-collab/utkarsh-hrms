@@ -10,7 +10,7 @@ label{display:block;font-size:13px;color:var(--mute);margin-top:10px}input,selec
 .clk{font-size:40px;font-weight:800;text-align:center;line-height:1.1}.msg{margin-top:10px;padding:10px;border-radius:8px;background:var(--bg);font-size:14px}.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
 .r{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.hide{display:none!important}
 </style></head><body><div class="w">
-<div id="login" class="c hide"><h1>Utkarsh Path Lab</h1><div class="m">Staff login</div>
+<div id="login" class="c"><h1>Utkarsh Path Lab</h1><div class="m">Staff login</div>
 <label>Mobile number<input id="lm" inputmode="numeric" maxlength="10"></label><label>PIN<input id="lp" type="password" inputmode="numeric" maxlength="4"></label>
 <button class="b" id="lb">Login</button><div id="le" class="msg bad hide"></div></div>
 <div id="app" class="hide">
@@ -23,13 +23,17 @@ label{display:block;font-size:13px;color:var(--mute);margin-top:10px}input,selec
  <button class="b" id="qb" style="font-size:16px;padding:12px">Request bhejo</button><div id="qm" class="msg hide"></div></div>
  <div class="c"><h2>Meri requests</h2><div id="ql" class="m">Koi request nahi.</div></div>
 </div></div>
+<script>
+window.addEventListener('error',function(e){document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+e.message+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':'')+'</pre>')},true);
+window.addEventListener('unhandledrejection',function(e){document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+((e.reason&&(e.reason.code||e.reason.message))||e.reason)+'</pre>')});
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<script src="firebase-config.js?v=3"></script>
 <script>
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0'),dk=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const hm=t=>t?(t.toDate?t.toDate():new Date(t)).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'—';
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore(),TS=firebase.firestore.FieldValue.serverTimestamp;
+const _ap=firebase.initializeApp(firebaseConfig,'staff'),auth=_ap.auth(),db=_ap.firestore(),TS=()=>firebase.firestore.FieldValue.serverTimestamp();
 let emp=null,br=null,today=null,unsubs=[];
 const say=(el,t,c)=>{el.textContent=t;el.className='msg '+(c||'');el.classList.remove('hide')};
 setInterval(()=>{const n=new Date();$('#clk').textContent=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});$('#dt').textContent=n.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})},500);
@@ -39,10 +43,10 @@ $('#lo').onclick=()=>auth.signOut();
 auth.onAuthStateChanged(async u=>{unsubs.forEach(f=>f());unsubs=[];
   if(!u){$('#app').classList.add('hide');$('#login').classList.remove('hide');return}
   const d=await db.collection('emp').doc(u.uid).get();
-  if(!d.exists||d.data().tag==='Inactive'){await auth.signOut();say($('#le'),'Ye account active nahi hai. Admin se baat karo.','bad');return}
+  if(!d.exists||d.data().tag==='Inactive'){$('#app').classList.add('hide');$('#login').classList.remove('hide');say($('#le'),'Ye staff account nahi hai ya active nahi hai. Staff ka mobile aur PIN se login karo.','bad');return}
   emp={id:u.uid,...d.data()};br=emp.branchId?(await db.collection('branch').doc(emp.branchId).get()).data():null;
-  $('#nm').textContent=emp.name;$('#br').textContent=(emp.branch||'')+' • '+(emp.role||'');$('#login').classList.add('hide');$('#app').classList.remove('hide');$('#qd').value=dk(new Date());
-  unsubs.push(db.collection('att').doc(u.uid+'_'+dk(new Date())).onSnapshot(s=>{today=s.exists?s.data():null;st()}));
+  $('#nm').textContent=emp.name;$('#br').textContent=(emp.branch||'')+' • '+(emp.role||'');$('#login').classList.add('hide');$('#app').classList.remove('hide');$('#qd').value=dk(new Date());st();
+  unsubs.push(db.collection('att').doc(u.uid+'_'+dk(new Date())).onSnapshot(s=>{today=s.exists?s.data():null;st()},e=>{today=null;st();say($('#pm'),'Aaj ka data nahi padh paye: '+e.code,'bad')}));
   unsubs.push(db.collection('req').where('empId','==',u.uid).onSnapshot(s=>{const a=s.docs.map(x=>x.data()).sort((x,y)=>y.created-x.created);
     $('#ql').innerHTML=a.length?a.map(r=>`<div class="r"><span>${esc(r.date)} – ${esc(r.type)}</span><b style="color:var(--${r.status==='approved'?'ok':r.status==='rejected'?'bad':'warn'})">${esc(r.status)}</b></div>`).join(''):'Koi request nahi.'}));
 });
@@ -57,7 +61,7 @@ async function punch(kind){const m=$('#pm');
     const id=emp.id+'_'+dk(new Date());
     try{if(kind==='in')await db.collection('att').doc(id).set({empId:emp.id,name:emp.name,date:dk(new Date()),in:TS(),out:null,inDist:d,lat:c.latitude,lng:c.longitude});
       else await db.collection('att').doc(id).update({out:TS(),outDist:d,lat:c.latitude,lng:c.longitude});
-      say(m,(kind==='in'?'Punch in':'Punch out')+' ho gaya ('+d+' m).','ok')}catch(e){say(m,'Punch nahi hua. Internet check karo ya admin ko batao.','bad')}},
+      say(m,(kind==='in'?'Punch in':'Punch out')+' ho gaya ('+d+' m).','ok')}catch(e){say(m,'Punch nahi hua: '+(e.code||e.message)+' (admin ko ye line dikhao)','bad')}},
    ()=>say(m,'Location nahi mili. Browser me location allow karke GPS on karo.','bad'),{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
 $('#bi').onclick=()=>punch('in');$('#bo').onclick=()=>punch('out');
 const ms=(d,t)=>t?new Date(d+'T'+t).getTime():null;
