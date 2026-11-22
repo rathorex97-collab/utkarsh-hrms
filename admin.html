@@ -67,6 +67,7 @@ dialog h3{margin:0 0 12px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:10p
   <button class="mi" data-p="shift">Manage Shifts</button>
   <button class="mi" data-p="ph">Leaves &amp; Holidays</button>
   <button class="mi" data-p="req">Approval Requests</button>
+<button class="mi" id="bOut" style="margin-top:14px;color:var(--bad)">Logout</button>
 </aside>
 <main>
   <div id="demo" class="banner w hide">Demo mode: data sirf is browser me hai. Sab devices par shared data ke liye owner/admin account se kholo.</div>
@@ -117,10 +118,12 @@ dialog h3{margin:0 0 12px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:10p
 <dialog id="dA"><h3 id="dAt">Edit punch</h3><div class="fg"><label>Punch in<input type="time" id="aI"></label><label>Punch out<input type="time" id="aO"></label></div>
 <p style="text-align:right;margin:14px 0 0"><button class="btn" id="aX">Cancel</button> <button class="btn pri" id="aOk">Save</button></p></dialog>
 
+<script>
+window.addEventListener('error',function(e){document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap;z-index:99;position:relative">ERROR: '+e.message+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':'')+'</pre>')},true);
+window.addEventListener('unhandledrejection',function(e){document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+((e.reason&&(e.reason.code||e.reason.message))||e.reason)+'</pre>')});
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script src="firebase-config.js"></script>
 <script>
-  window.onerror=(m,u,l)=>document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+m+' (line '+l+')</pre>');
-window.onunhandledrejection=e=>document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+(e.reason&&e.reason.message||e.reason)+'</pre>');
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
 const dk=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const hm=t=>t?new Date(t).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'—';
@@ -235,7 +238,8 @@ document.querySelector('main').addEventListener('change',async e=>{const id=e.ta
   firebase.initializeApp(firebaseConfig);const auth=firebase.auth();db=firebase.firestore();let started=false;
   const fix=o=>{for(const k of['in','out'])if(o[k]&&o[k].toMillis)o[k]=o[k].toMillis();return o};
   $('#dL').addEventListener('cancel',e=>e.preventDefault());
-  $('#lOk').onclick=async()=>{try{await auth.signInWithEmailAndPassword($('#lE').value.trim(),$('#lP').value)}catch(e){$('#lErr').textContent='Error: '+e.code'}};
+  $('#bOut').onclick=()=>auth.signOut().then(()=>location.reload());
+  $('#lOk').onclick=async()=>{try{await auth.signInWithEmailAndPassword($('#lE').value.trim(),$('#lP').value)}catch(e){$('#lErr').textContent='Login nahi hua: '+(e.code||e.message)}};
   auth.onAuthStateChanged(async u=>{
     if(!u){$('#dL').showModal();return}
     const a=await db.collection('admins').doc(u.uid).get().catch(()=>null);
