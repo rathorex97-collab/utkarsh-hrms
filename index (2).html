@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1480c4"><link rel="manifest" href="manifest.json"><title>Utkarsh Staff</title>
+<style>
+:root{--bg:#f1f4f8;--card:#fff;--ink:#1f2a37;--mute:#6b7785;--line:#e3e8ee;--pri:#1480c4;--ok:#12904f;--bad:#c0392b;--warn:#b7791f;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#10161d;--card:#18212b;--ink:#e8eef4;--mute:#92a0ae;--line:#2a3643;--pri:#4aa8e0;--ok:#4cc88b;--bad:#f08a7e;--warn:#e8b95c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,"Mukta",sans-serif}
+.w{max-width:440px;margin:0 auto;padding:16px}.c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+h1{font-size:19px;margin:0 0 4px}h2{font-size:16px;margin:0 0 10px}.m{color:var(--mute);font-size:14px}
+label{display:block;font-size:13px;color:var(--mute);margin-top:10px}input,select{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:2px}
+.b{width:100%;font:700 18px inherit;border:0;border-radius:12px;padding:18px;margin-top:12px;color:#fff;background:var(--pri)}.b.i{background:var(--ok)}.b.o{background:#c93d74}.b:disabled{opacity:.4}
+.clk{font-size:40px;font-weight:800;text-align:center;line-height:1.1}.msg{margin-top:10px;padding:10px;border-radius:8px;background:var(--bg);font-size:14px}.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+.r{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.hide{display:none!important}
+</style></head><body><div class="w">
+<div id="login" class="c"><h1>Utkarsh Path Lab</h1><div class="m">Staff login</div>
+<label>Mobile number<input id="lm" inputmode="numeric" maxlength="10"></label><label>PIN<input id="lp" type="password" inputmode="numeric" maxlength="4"></label>
+<button class="b" id="lb">Login</button><div id="le" class="msg bad hide"></div></div>
+<div id="app" class="hide">
+ <div class="c"><div style="display:flex;justify-content:space-between"><div><h1 id="nm"></h1><div class="m" id="br"></div></div><button id="lo" style="border:0;background:none;color:var(--pri);font:inherit">Logout</button></div></div>
+ <div class="c"><div class="clk" id="clk"></div><div class="m" style="text-align:center" id="dt"></div><div class="msg" id="td">…</div>
+ <button class="b i" id="bi" disabled>Punch in</button><button class="b o" id="bo" disabled>Punch out</button><div id="pm" class="msg hide"></div></div>
+ <div class="c"><h2>Late / punch miss ki request</h2><label>Date<input type="date" id="qd"></label>
+ <label>Kya hua?<select id="qt"><option>Late aaya</option><option>Punch in bhool gaya</option><option>Punch out bhool gaya</option></select></label>
+ <label>Punch in time<input type="time" id="qi"></label><label>Punch out time<input type="time" id="qo"></label><label>Karan<input id="qr" placeholder="Short karan likho"></label>
+ <button class="b" id="qb" style="font-size:16px;padding:12px">Request bhejo</button><div id="qm" class="msg hide"></div></div>
+ <div class="c"><h2>Meri requests</h2><div id="ql" class="m">Koi request nahi.</div></div>
+</div></div>
+<script>
+window.addEventListener('error',function(e){document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+e.message+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':'')+'</pre>')},true);
+window.addEventListener('unhandledrejection',function(e){document.body.insertAdjacentHTML('afterbegin','<pre style="color:#b00;background:#fff;padding:8px;margin:0;white-space:pre-wrap">ERROR: '+((e.reason&&(e.reason.code||e.reason.message))||e.reason)+'</pre>')});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js?v=3"></script>
+<script>
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0'),dk=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const hm=t=>t?(t.toDate?t.toDate():new Date(t)).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'—';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore(),TS=firebase.firestore.FieldValue.serverTimestamp;
+let emp=null,br=null,today=null,unsubs=[];
+const say=(el,t,c)=>{el.textContent=t;el.className='msg '+(c||'');el.classList.remove('hide')};
+setInterval(()=>{const n=new Date();$('#clk').textContent=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});$('#dt').textContent=n.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})},500);
+$('#lb').onclick=async()=>{const m=$('#lm').value.replace(/\D/g,''),p=$('#lp').value;
+  try{await auth.signInWithEmailAndPassword(m+'@staff.utkarsh.app','Utk'+p)}catch(e){say($('#le'),'Login nahi hua: '+(e.code||e.message),'bad')}};
+$('#lo').onclick=()=>auth.signOut();
+auth.onAuthStateChanged(async u=>{unsubs.forEach(f=>f());unsubs=[];
+  if(!u){$('#app').classList.add('hide');$('#login').classList.remove('hide');return}
+  const d=await db.collection('emp').doc(u.uid).get();
+  if(!d.exists||d.data().tag==='Inactive'){await auth.signOut();say($('#le'),'Ye account active nahi hai. Admin se baat karo.','bad');return}
+  emp={id:u.uid,...d.data()};br=emp.branchId?(await db.collection('branch').doc(emp.branchId).get()).data():null;
+  $('#nm').textContent=emp.name;$('#br').textContent=(emp.branch||'')+' • '+(emp.role||'');$('#login').classList.add('hide');$('#app').classList.remove('hide');$('#qd').value=dk(new Date());
+  unsubs.push(db.collection('att').doc(u.uid+'_'+dk(new Date())).onSnapshot(s=>{today=s.exists?s.data():null;st()}));
+  unsubs.push(db.collection('req').where('empId','==',u.uid).onSnapshot(s=>{const a=s.docs.map(x=>x.data()).sort((x,y)=>y.created-x.created);
+    $('#ql').innerHTML=a.length?a.map(r=>`<div class="r"><span>${esc(r.date)} – ${esc(r.type)}</span><b style="color:var(--${r.status==='approved'?'ok':r.status==='rejected'?'bad':'warn'})">${esc(r.status)}</b></div>`).join(''):'Koi request nahi.'}));
+});
+function st(){const phone=emp.mode!=='machine';$('#td').textContent=!phone?'Aapko punch machine se attendance lagani hai.':today?.in?'Punch in: '+hm(today.in)+(today.out?'  •  Punch out: '+hm(today.out):''):'Aaj abhi punch in nahi hua.';
+  $('#bi').disabled=!phone||!!today?.in;$('#bo').disabled=!phone||!today?.in||!!today?.out}
+const dist=(a,b,c,d)=>{const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return Math.round(12742000*Math.asin(Math.sqrt(h)))};
+async function punch(kind){const m=$('#pm');
+  if(!br||br.lat==null)return say(m,'Branch ki location admin ne abhi set nahi ki.','bad');
+  say(m,'Location check ho rahi hai…');
+  navigator.geolocation.getCurrentPosition(async p=>{const c=p.coords,d=dist(c.latitude,c.longitude,br.lat,br.lng);
+    if(d>(br.radius||100)+Math.min(c.accuracy||0,50))return say(m,`Aap branch se ${d} m door ho. Branch ke andar aake punch karo.`,'bad');
+    const id=emp.id+'_'+dk(new Date());
+    try{if(kind==='in')await db.collection('att').doc(id).set({empId:emp.id,name:emp.name,date:dk(new Date()),in:TS(),out:null,inDist:d,lat:c.latitude,lng:c.longitude});
+      else await db.collection('att').doc(id).update({out:TS(),outDist:d,lat:c.latitude,lng:c.longitude});
+      say(m,(kind==='in'?'Punch in':'Punch out')+' ho gaya ('+d+' m).','ok')}catch(e){say(m,'Punch nahi hua. Internet check karo ya admin ko batao.','bad')}},
+   ()=>say(m,'Location nahi mili. Browser me location allow karke GPS on karo.','bad'),{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
+$('#bi').onclick=()=>punch('in');$('#bo').onclick=()=>punch('out');
+const ms=(d,t)=>t?new Date(d+'T'+t).getTime():null;
+$('#qb').onclick=async()=>{const m=$('#qm'),d=$('#qd').value;if(!d||!$('#qr').value.trim())return say(m,'Date aur karan likho.','bad');
+  try{await db.collection('req').add({empId:emp.id,name:emp.name,date:d,type:$('#qt').value,in:ms(d,$('#qi').value),out:ms(d,$('#qo').value),reason:$('#qr').value.trim(),status:'pending',created:Date.now()});say(m,'Request admin ko bhej di.','ok');$('#qr').value=''}catch(e){say(m,'Request nahi gayi, dobara try karo.','bad')}};
+</script></body></html>
